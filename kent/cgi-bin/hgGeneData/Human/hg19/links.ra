@@ -1,0 +1,31 @@
+# hg18 link info.
+
+name exonPrimer
+shortLabel ExonPrimer
+tables kgXref
+idSql select kgID from kgXref where kgID = '%s'
+url https://ihg.helmholtz-muenchen.de/cgi-bin/primer/ExonPrimerUCSC.pl?db=hg19&acc=%s
+priority 10
+
+name palTrack
+shortLabel Protein FASTA
+tables multiz46way
+idSql select chrom,txStart+1,txEnd,name from knownGene where name = '%s'
+url ../cgi-bin/hgPal?g=knownGene&c=%s&l=%s&r=%s&i=%s
+hgsid on
+dbInUrl on
+priority 1
+
+name wikipedia
+shortLabel Wikipedia
+tables knownToWikipedia
+idSql select value from knownToWikipedia where name = '%s';
+url http://api.genewikiplus.org/biogps-plugins/wp/%s
+priority 11
+
+name gtex
+shortLabel GTEx
+tables wgEncodeGencodeAttrsV19 knownToGencodeV19
+idSql select wgEncodeGencodeAttrsV19.geneId from knownToGencodeV19, wgEncodeGencodeAttrsV19 where knownToGencodeV19.name = '%s' and wgEncodeGencodeAttrsV19.transcriptId = knownToGencodeV19.value;
+url http://www.gtexportal.org/home/gene/%s
+priority 10

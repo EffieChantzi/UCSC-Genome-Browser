@@ -1,0 +1,435 @@
+include nonCodingRNAs.ra
+
+#track wgRna override 
+#dataVersion miRBase Release 15.0 (April 2010) and snoRNABase Version 3
+#pennantIcon 19.jpg ../goldenPath/help/liftOver.html "lifted from hg19" 
+
+track hgIkmc override
+origAssembly hg19 
+pennantIcon 19.jpg ../goldenPath/help/liftOver.html "lifted from hg19" 
+
+track fishClones override
+origAssembly hg18
+pennantIcon 18.jpg ../goldenPath/help/liftOver.html "lifted from hg18"
+
+track fosEndPairs override
+origAssembly hg18
+pennantIcon 18.jpg ../goldenPath/help/liftOver.html "lifted from hg18"
+
+include trackDb.wgEncode.ra
+
+track par override
+group x
+visibility hide
+
+track windowmaskerSdust override
+group rep
+
+track nestedRepeats override
+group rep
+
+track simpleRepeat override
+group rep
+
+searchName assemblyAcc
+searchTable gold
+searchMethod prefix
+query select chrom,chromStart,chromEnd,frag from %s where frag like '%s%%'
+searchPriority 5
+shortCircuit 1
+termRegex [A-Z][A-Z0-9]+(\.[0-9]+)?
+
+# Local declaration so that local gap.html is picked up.
+track gap override
+html gap
+visibility hide
+
+include rmskTracks.ra
+
+track ctgPos2
+shortLabel GRC Contigs
+longLabel Genome Reference Consortium Contigs
+group map
+visibility hide
+type ctgPos
+url http://www.ncbi.nlm.nih.gov/nuccore/$$
+chromosomes chr1,chr3,chr4,chr5,chr6,chr7,chr8,chr9,chr10,chr11,chr12,chr13,chr14,chr15,chr16,chr17,chr18,chr19,chr2,chr20,chr21,chr22,chrX,chrY
+
+searchTable ctgPos2
+searchMethod prefix
+shortCircuit 1
+termRegex [GK][LI][028][0-9]+(\.[0-9]+)?
+query select chrom,chromStart,chromEnd,contig from %s where contig like '%s%%'
+searchPriority 5
+
+track scaffolds
+shortLabel Scaffolds
+longLabel GRCh38 Defined Scaffold Identifiers
+group map
+visibility hide
+color 0,0,0
+type bed 4 .
+
+searchTable scaffolds
+searchMethod prefix
+searchType bed
+shortCircuit 1
+termRegex [1-9HMXY][0-9A-Z_]*
+searchPriority 18
+
+track analysisGap
+shortLabel Analysis Gap
+longLabel Extra Gap Locations in Analysis Set Sequence on chr5, 14, 19, 21, 22, Y
+group x
+visibility hide
+type bed 4 .
+chromosomes chr14,chr19,chr21,chr22,chr5,chrY
+
+track hg38ContigDiff
+shortLabel Hg19 Diff
+longLabel Contigs New to GRCh38/(hg38), Not Carried Forward from GRCh37/(hg19)
+visibility pack
+priority 2
+group map
+type bed 9 .
+scoreFilterByRange on
+itemRgb on
+color 0,0,0
+urlLabel Genbank accession:
+url http://www.ncbi.nlm.nih.gov/nuccore/$$
+
+track centromeres
+shortLabel Centromeres
+longLabel Centromere Locations
+group map
+visibility hide
+type bed 4 .
+chromosomes chr1,chr10,chr11,chr12,chr13,chr14,chr15,chr16,chr17,chr18,chr19,chr2,chr20,chr21,chr22,chr3,chr4,chr5,chr6,chr7,chr8,chr9,chrX,chrY
+color 255,0,0
+url http://www.ncbi.nlm.nih.gov/nuccore/$$
+urlLabel NCBI accession record:
+
+include ../chainNetPrimate.ra
+include ../chainNetPlacental.ra
+include ../chainNetVertebrate.ra
+include ../chainNetLegacy.ra alpha
+include ../newChainNet.ra alpha
+
+track contigAlignmentSegments
+shortLabel ContigSegments
+longLabel Non-bridged Contig Segments Used in lastz/chain/net Alignment Pipeline
+group x
+visibility hide
+type bed 4
+
+track chainSelf override
+longLabel $Organism Chained Self Alignments
+group rep
+chainColor Normalized Score
+matrixHeader A, C, G, T
+matrix 16 91,-114,-31,-123,-114,100,-125,-31,-31,-125,100,-114,-123,-31,-114,91
+type chain hg38
+otherDb hg38
+chainNormScoreAvailable yes
+
+track multiz4way
+shortLabel 4-way Multiz
+longLabel 4-Way Multiz Alignment & Conservation
+group compGeno
+visibility hide
+color 0, 10, 100
+altColor 0,90,10
+type wigMaf 0.0 1.0
+maxHeightPixels 100:40:11
+# wiggle phastCons4way
+# spanList 1
+pairwiseHeight 12
+yLineOnOff Off
+# frames multiz4wayFrames
+# irows on
+autoScale Off
+windowingFunction mean
+summary multiz4waySummary
+speciesCodonDefault hg38
+speciesGroups mammal
+sGroup_mammal rheMac3 mm10 canFam3
+treeImage phylo/hg38_4way.gif
+
+include defaultPriority.ra
+
+track altSequence
+superTrack on
+shortLabel Alt Map
+longLabel GRCh38 Haplotype to Reference Sequence Mapping Correspondence
+visibility hide
+otherDb hg38
+group map
+
+    track altLocations
+    superTrack altSequence pack
+    type bed 4
+    color 32,32,190
+    shortLabel Haplotypes
+    longLabel GRCh38 Haplotype to Reference Sequence Mapping Correspondence
+    html altSequence
+    url /cgi-bin/hgTracks?db=hg38&position=$$
+    urlLabel Corresponding position:
+
+    track altSeqLiftOverPsl
+    superTrack altSequence pack
+    shortLabel Alt Map
+    longLabel GRCh38 Alignments to the Alternate Sequences/Haplotypes
+    type psl
+    html altSequence
+    indelDoubleInsert on
+    indelQueryInsert on
+    showDiffBasesAllScales .
+    showDiffBasesMaxZoom 10000.0
+    showCdsMaxZoom 10000.0
+    showCdsAllScales .
+    baseColorDefault diffBases
+    baseColorUseSequence extFile seqNcbiAltSequence extNcbiAltSequence
+
+track altSeqLiftOverBigPsl
+#superTrack altSequence pack
+visibility hide
+shortLabel Big Alt Map
+longLabel Big GRCh38 Alignments to the Alternate Sequences/Haplotypes
+type bigPsl
+bigDataUrl http://hgwdev.cse.ucsc.edu/~braney/altSeqLiftOverPsl.bb
+html altSequence
+indelDoubleInsert on
+indelQueryInsert on
+showDiffBasesAllScales .
+showDiffBasesMaxZoom 10000.0
+showCdsMaxZoom 10000.0
+showCdsAllScales .
+baseColorDefault diffBases
+baseColorUseSequence lfExtra
+#baseColorUseSequence extFile seqNcbiAltSequence extNcbiAltSequence
+release alpha
+
+track altSequenceExp
+superTrack on
+shortLabel Exp Alt Map
+longLabel GRCh38 Haplotype to Reference Sequence Mapping Correspondence
+visibility hide
+group x
+
+    track ncbiAltMappingsChain
+    superTrack altSequenceExp pack
+    shortLabel Alt Map Chain
+    longLabel Chain Mappings to the Alternate Sequences/Haplotypes
+    type chain hg38
+    spectrum on
+    html altSequence
+
+    track ncbiAltMappingsMaf
+    superTrack altSequenceExp pack
+    shortLabel Alt Map Maf
+    longLabel Maf Mappings to the Alternate Sequences/Haplotypes
+    type maf
+    html altSequence
+
+include trackDb.7way.ra
+include trackDb.17way.ra alpha
+include trackDb.20way.ra
+
+track ucscRetroAli8
+shortLabel Retroposed Genes 8.0
+longLabel Retroposed Genes V8, Including Pseudogenes
+group genes
+type psl
+color 20,0,250
+visibility hide
+ucscRetroInfo ucscRetroInfo8
+baseColorDefault diffCodons
+baseColorUseCds table ucscRetroCds8
+baseColorUseSequence extFile ucscRetroSeq8 ucscRetroExtFile8
+indelDoubleInsert on
+indelQueryInsert on
+showDiffBasesAllScales .
+showDiffBasesMaxZoom 10000.0
+showCdsAllScales .
+showCdsMaxZoom 10000.0
+
+searchName ucscRetroInfoRefSeq8
+searchTable ucscRetroAli8
+searchDescription Retroposed GenesV8, Including Pseudogenes - 2014-07-08
+query select tName, tStart,tEnd, qName from %s where qName like '%s%%'
+xrefTable refLink, ucscRetroInfo8
+dontCheckXrefQueryFormat 1
+xrefQuery select ucscRetroInfo8.name, refLink.name from %s where refLink.name like '%s%%' and refSeq = mrnaAcc 
+searchPriority 3.52
+
+track mrnaBig
+bigDataUrl http://hgwdev.cse.ucsc.edu/~braney/bigMrna.bb
+shortLabel Big $Organism mRNAs
+longLabel Big $Organism mRNAs from GenBank 
+group x
+visibility hide
+type bigPsl
+baseColorUseCds given
+#baseColorUseSequence genbank
+baseColorUseSequence lfExtra
+baseColorDefault diffCodons
+#baseColorDefault diffBases
+showDiffBasesAllScales .
+indelDoubleInsert on
+indelQueryInsert on
+indelPolyA on
+release alpha
+
+
+searchName ucscRetroInfoMrna8
+searchTable ucscRetroAli8
+searchDescription Retroposed GenesV8, Including Pseudogenes - 2014-07-08
+query select tName, tStart,tEnd, qName from %s where qName like '%s%%'
+searchPriority 3.55
+
+searchName ucscRetroUniProt8
+searchTable ucscRetroAli8
+searchDescription Retroposed GenesV8, Including Pseudogenes - 2014-07-08
+query select tName, tStart,tEnd, qName from %s where qName like '%s%%'
+dontCheckXrefQueryFormat 1
+xrefTable kgXref, ucscRetroInfo8
+xrefQuery select ucscRetroInfo8.name, spDisplayID from %s where spDisplayID like '%s%%' and kgName = kgID 
+searchPriority 3.54
+
+searchName ucscRetroKnownGene8
+searchTable ucscRetroAli8
+searchDescription Retroposed GenesV8, Including Pseudogenes - 2014-07-08
+query select tName, tStart,tEnd, qName from %s where qName like '%s%%'
+dontCheckXrefQueryFormat 1
+xrefTable kgXref, ucscRetroInfo8
+xrefQuery select ucscRetroInfo8.name, geneSymbol from %s where geneSymbol like '%s%%' and kgName = kgID 
+searchPriority 3.53
+
+track ucscRetroAli9
+shortLabel RetroGenes V9
+longLabel Retroposed Genes V9, Including Pseudogenes
+group genes
+type psl
+priority 37.14
+color 20,0,250
+visibility pack
+ucscRetroInfo ucscRetroInfo9
+baseColorDefault diffCodons
+baseColorUseCds table ucscRetroCds9
+baseColorUseSequence extFile ucscRetroSeq9 ucscRetroExtFile9
+indelDoubleInsert on
+indelQueryInsert on
+showDiffBasesAllScales .
+showDiffBasesMaxZoom 10000.0
+showCdsAllScales .
+showCdsMaxZoom 10000.0
+dataVersion Jan. 2015
+exonNumbers off
+
+searchName ucscRetroInfoRefSeq9
+searchTable ucscRetroAli9
+searchDescription Retroposed Genes V9, Including Pseudogenes
+query select tName, tStart,tEnd, qName from %s where qName like '%s%%'
+xrefTable refLink, ucscRetroInfo9
+dontCheckXrefQueryFormat 1
+xrefQuery select ucscRetroInfo9.name, refLink.name from %s where refLink.name like '%s%%' and refSeq = mrnaAcc 
+searchPriority 3.52
+
+searchName ucscRetroInfoMrna9
+searchTable ucscRetroAli9
+searchDescription Retroposed Genes V9, Including Pseudogenes
+query select tName, tStart,tEnd, qName from %s where qName like '%s%%'
+searchPriority 3.55
+
+searchName ucscRetroUniProt9
+searchTable ucscRetroAli9
+searchDescription Retroposed Genes V9, Including Pseudogenes
+query select tName, tStart,tEnd, qName from %s where qName like '%s%%'
+dontCheckXrefQueryFormat 1
+xrefTable kgXref, ucscRetroInfo9
+xrefQuery select ucscRetroInfo9.name, spDisplayID from %s where spDisplayID like '%s%%' and kgName = kgID 
+searchPriority 3.54
+
+searchName ucscRetroKnownGene9
+searchTable ucscRetroAli9
+searchDescription Retroposed Genes V9, Including Pseudogenes
+query select tName, tStart,tEnd, qName from %s where qName like '%s%%'
+dontCheckXrefQueryFormat 1
+xrefTable kgXref, ucscRetroInfo9
+xrefQuery select ucscRetroInfo9.name, geneSymbol from %s where geneSymbol like '%s%%' and kgName = kgID 
+searchPriority 3.53
+
+track snp141Mult override
+snpSeqFile /gbdb/hg38/snp/snp141.fa
+
+track snp141Flagged override
+snpSeqFile /gbdb/hg38/snp/snp141.fa
+
+track snp141Common override
+snpSeqFile /gbdb/hg38/snp/snp141.fa
+
+track snp141 override
+snpSeqFile /gbdb/hg38/snp/snp141.fa
+
+track snp142Mult override
+snpSeqFile /gbdb/hg38/snp/snp142.fa
+
+track snp142Flagged override
+snpSeqFile /gbdb/hg38/snp/snp142.fa
+
+track snp142Common override
+snpSeqFile /gbdb/hg38/snp/snp142.fa
+
+track snp142 override
+snpSeqFile /gbdb/hg38/snp/snp142.fa
+
+track snp144Mult override
+snpSeqFile /gbdb/hg38/snp/snp144.fa
+
+track snp144Flagged override
+snpSeqFile /gbdb/hg38/snp/snp144.fa
+
+track snp144Common override
+snpSeqFile /gbdb/hg38/snp/snp144.fa
+
+track snp144 override
+snpSeqFile /gbdb/hg38/snp/snp144.fa
+
+track genomicSuperDups override
+group rep
+
+track sibGene override
+url http://ccg.vital-it.ch/cgi-bin/tromer/tromer_quick_search_internal.pl?db=hg38&query_str=$$
+urlLabel SIB link:
+
+track sibTxGraph override
+url http://ccg.vital-it.ch/cgi-bin/tromer/tromergraph2draw.pl?db=hg38&species=H.+sapiens&tromer=$$
+
+track knownGeneOld8
+shortLabel Old UCSC Genes
+longLabel Previous Version of UCSC Genes
+group genes
+visibility hide
+color 82,82,160
+type genePred
+hgsid on
+oldToNew kg8ToKg9
+baseColorUseCds given
+baseColorDefault genomicCodons
+
+searchName knownGeneOld8
+searchTable knownGeneOld8
+searchDescription Previous Version of UCSC Genes
+searchMethod fuzzy
+query select chrom, txStart,txEnd, name from %s where name like '%%%s%%'
+searchPriority 3.53
+
+include trackDb.cloneEnd.ra
+
+include hg38Patch3.ra
+include knownGene.ra
+
+include trackDb.100way.ra
+
+track microsat override
+group rep
