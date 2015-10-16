@@ -22,20 +22,29 @@ print '''
 
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
 <script type="text/javascript" src="../js/zoom.js"></script>
+<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
 <script type="text/javascript">
 jQuery(document).ready(function($){ //fire on DOM ready
-$('#path_im').addpowerzoom()
-})
+var c = 0;
+$('#zoomBtn').click(function(){
+
+       if (c == 0){
+        $('#path_im').addpowerzoom({magnifiersize: [450, 450]});
+        c = 1
+       }
+       else{
+       $('#path_im').addpowerzoom({magnifiersize: [0, 0]});
+       c = 0
+       }
+    });
+});
 </script>
 
-
-'''
-print '<title>Pathway List</title>'
-print '</head>'
-print '''
-<body>
-
-<H3>Pathway</H3>
+<style type="text/css">
+.gapClass{margin-left:78%;}
+</style>
 
 '''
 
@@ -50,6 +59,19 @@ tmp_db = (parsedURL.query).split('=')[3]
 orgDB = tmp_db.split('&')[0]
 
 
+
+print '''
+<title>Pathway Map</title>
+</head>
+<body>
+
+<div class="panel panel-primary">
+<div class="panel-heading">%s_%s <b class="gapClass"></b> <button type="button" class="btn btn-primary btn-lg" id="zoomBtn" style="margin-left: 20px;">
+<span class="glyphicon glyphicon-zoom-in"></span> &nbsp; <span class="glyphicon glyphicon-zoom-out"></span></button></div>''' % (pathMap, gene)
+print '</div>'
+
+
+
 def drawPathway(geneID, orgDB, pathID):
 
     pathway = KGML_parser.read(kegg_get(pathID, "kgml"))
@@ -61,7 +83,7 @@ def drawPathway(geneID, orgDB, pathID):
     # pathway(s) of the initially requested LokiArchaea gene. It returns both the requested gene + ortholog genes for drawing purposes.
     sql = "SELECT k1.pathwayID, k1.orthologID, l1.name, k1.EC FROM KEGG_PathwayList k1, {db}.org_kegg_data l1 WHERE k1.orthologID=l1.orthologID AND k1.pathwayID IN (SELECT k.pathwayID FROM KEGG_PathwayList k, {db}.org_kegg_data l WHERE k.orthologID = l.orthologID AND l.name = '{gene}' AND k.pathwayID = '{pathway}')".format(db = orgDB, gene= geneID, pathway=pathID)
     cursor.execute(sql)
-        
+
     data_genes = cursor.fetchall()
 
     check_nameFile = ''.join([pathID, '_', geneID, '.png'])
@@ -116,7 +138,7 @@ def drawPathway(geneID, orgDB, pathID):
 		count = 0
                 if graphic_o.type == "line":
                     if graphic_o.fgcolor == '#ff0000' or graphic_o.fgcolor == '#ffd700':
-			
+
                         numGenes = graphic_o.name.count('_')
                         splitted = graphic_o.name.split('_')
 
@@ -150,7 +172,7 @@ def drawPathway(geneID, orgDB, pathID):
                         splitted = graphic_o.name.split('_')
 
 			if graphic_o.name.startswith("N"):
-                                numGenes = numGenes + 1			
+                                numGenes = numGenes + 1
 
                         if numGenes > 1:
                             for e in splitted:
@@ -162,7 +184,7 @@ def drawPathway(geneID, orgDB, pathID):
                                     if graphic_o.name.startswith("N"):
                                         ec = splitted[0]
                                         graphic_o.name = ''.join([ec[1 : len(ec)], ' ', '(', str(numGenes), ')'])
-					
+
                         else:
                             for e in splitted:
                                 if '/' in e:
@@ -173,12 +195,12 @@ def drawPathway(geneID, orgDB, pathID):
                                     if graphic_o.name.startswith("N"):
                                         ec = splitted[0]
                                         graphic_o.name = ec[1 : len(ec)]
-                    
+
 
         canvas = KGMLCanvas(pathway, import_imagemap=True, label_compounds=False, label_maps=False, fontsize=8,
                         show_genes=False, show_orthologs=True)
         img_filename = "%s_%s.pdf" % (pathID, geneID)
-  
+
         canvas.draw(img_filename)
         with Image(filename=img_filename, resolution=300) as img:
             with Image(width=img.width, height=img.height, background=Color("white")) as bg:
@@ -205,4 +227,3 @@ displayPathway(ImName)
 
 print '</body>'
 print '</html>'
-
