@@ -2,9 +2,9 @@
 
 This repository consists a portfolio for the master's project course "Applied Bioinformatics" taken during period 1 of fall semester 2015 at Uppsala University. 
 
-Our contribution concerning the addition of KEGG metabolic pathways on tracks details can be found under /kent/cgi-bin.
-Specifically, the two 
+Our contribution concerning the addition of KEGG metabolic pathways on tracks details can be found under kent/cgi-bin/listPathways.py and kent/cgi-bin/Path.py.
 
+More details are included in the report "Project_Report.pdf".
 
 
 ## CONTENTS AND COPYRIGHT
