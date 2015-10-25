@@ -1,8 +1,10 @@
 # UCSC-Genome-Browser
 
-This repository consists a 
+This repository consists a portfolio for the master's project course "Applied Bioinformatics" taken during period 1 of fall semester 2015 at Uppsala University. 
 
-CONTENTS AND COPYRIGHT
+
+
+## CONTENTS AND COPYRIGHT
 
 This directory contains the entire source tree for the
 UCSC Genome Bioinformatics Group's suite of biological analysis 
